@@ -3,13 +3,13 @@ create_embed_data<- function(embed_data,col_name_embedding='cats',cols_to_embed,
   #col_name_embedding is the column name you can use for the embeddings, this should never change
   #cols_to_embed = column names that are going to be included in the embeding layer
   #max words is the max number of unqiue valeus you want to have in the layer
-  
+
   df_X_embeddings <- embed_data %>% select(one_of(cols_to_embed))%>% ungroup()
-  
-  df_X_embeddings %<>%  
-    mutate_at(vars(one_of(cols_to_embed)), funs(str_replace_all(.,"[^[:alnum:]]",''))) %>% 
-    mutate_at(vars(one_of(cols_to_embed)), funs(str_replace_all(.,'[[:space:]]',''))) %>% 
-    unite(cats, colnames(.), sep = ' ') %>% 
+
+  df_X_embeddings %<>%
+    mutate_at(vars(one_of(cols_to_embed)), funs(str_replace_all(.,"[^[:alnum:]]",''))) %>%
+    mutate_at(vars(one_of(cols_to_embed)), funs(str_replace_all(.,'[[:space:]]',''))) %>%
+    unite(cats, colnames(.), sep = ' ') %>%
     mutate(cats=tolower(cats))
   guess<-max_words_num
   tokenizer <- text_tokenizer(num_words = guess) %>% fit_text_tokenizer(df_X_embeddings$cats)
@@ -27,7 +27,7 @@ create_embed_data<- function(embed_data,col_name_embedding='cats',cols_to_embed,
   if (max_length == 0){
     max_length <- 1
   }
-  
+
   embed_seq <- get_encoded_data(tokenizer = tokenizer,x = df_X_embeddings,max_length = max_length, colname = 'cats')
   #num_words = tokenizer$num_words
   if (!is.na(save_location)){
@@ -58,10 +58,10 @@ get_embed_data<- function(embed_data,col_name_embedding='cats',cols_to_embed,tok
   df_X_embeddings <-embed_data %>% select(one_of(cols_to_embed))%>% ungroup()
   df_X_embeddings <- df_X_embeddings %>% mutate_at(vars(one_of(cols_to_embed)), funs(str_replace_all(.,"[^[:alnum:]]",'')))
   df_X_embeddings <- df_X_embeddings %>% mutate_at(vars(one_of(cols_to_embed)), funs(str_replace_all(.,'[[:space:]]','')))
-  
+
   df_X_embeddings <- df_X_embeddings %>% unite(cats, colnames(.), sep = ' ')
   df_X_embeddings<- df_X_embeddings %>% mutate(cats=tolower(cats))
-  
+
   embed_seq<-get_encoded_data(tokenizer = tokenizer,x = df_X_embeddings,max_length = length(cols_to_embed), colname = 'cats')
   if (!is.na(save_location)){
     loc_save_data_info <- paste('embed',cols_to_embed_vec,paste(dataset_identifier,'.rds',sep=''), sep='_')
@@ -89,16 +89,15 @@ run_embedding_actions <- function(generate_embedding_data = T,embed_cols,data_lo
                         ,cols_to_embed = x,save_location = data_location)})
   } else {
     if (generate_test_data == T){
-      
+
       embed_list<- lapply(embed_cols, function(x){
         cols_to_embed_vec<-substr(paste(x,collapse = '_'),start=1,stop=50)
-        
         get_embed_data(embed_data = data,cols_to_embed = x,tokenizer =  load_text_tokenizer(paste(data_location,'/embed_',cols_to_embed_vec,'_tokenizer',sep='')),save_loc=test_save_location)
-        
+
       })
-      
+
       #embed_test_list<- get_embed_data(embed_data = denials_data_test,cols_to_embed = embed_cols[[1]],tokenizer = embed_list[[1]][[2]],save_loc=embedding_loc_test_single)
-      
+
     } else if (is.na(test_save_location)) {
       embed_list<-lapply(embed_cols, function(x){
         cols_to_embed_vec<-substr(paste(x,collapse = '_'),start=1,stop=50)
@@ -106,6 +105,7 @@ run_embedding_actions <- function(generate_embedding_data = T,embed_cols,data_lo
       })
     } else {
       embed_list<-lapply(embed_cols, function(x){
+        cols_to_embed_vec<-substr(paste(x,collapse = '_'),start=1,stop=50)
         list(data=readRDS(paste(test_save_location,'/embed_',x,'_Test.rds',sep='')), tokenizer= load_text_tokenizer(paste(data_location,'/embed_',x,'_tokenizer',sep='')))
       })
     }
