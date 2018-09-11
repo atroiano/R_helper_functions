@@ -1,3 +1,6 @@
+require(data.table)
+require(tidyverse)
+
 save_chunks<-function(df,tenant_id,client_id,auth_key,auth_type,resource_group,storage_account,container_name,blob_folder,blob_name){
   write.csv.str <- function(df, row.names = F) {
     filepath <- tempfile()
