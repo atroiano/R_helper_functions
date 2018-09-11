@@ -1,7 +1,7 @@
 require(data.table)
 require(tidyverse)
 
-save_chunks<-function(df,tenant_id,client_id,auth_key,auth_type,resource_group,storage_account,container_name,blob_folder,blob_name){
+ssave_chunks<-function(df,tenant_id,client_id,auth_key,auth_type,resource_group,storage_account,container_name,blob_folder,blob_name){
   write.csv.str <- function(df, row.names = F) {
     filepath <- tempfile()
     fwrite(df, filepath, row.names = row.names)
@@ -24,7 +24,7 @@ save_chunks<-function(df,tenant_id,client_id,auth_key,auth_type,resource_group,s
   while (end <= nrow(df) ) {
     #get size of one row and figure out how many rows per chunk, limiting to 64 MB
     #id will save multiple files
-    chunk<-denials_data_valid[start:end,]
+    chunk<-df[start:end,]
     
     azurePutBlob(sc
                  ,storageAccount = storage_account
@@ -43,7 +43,7 @@ save_chunks<-function(df,tenant_id,client_id,auth_key,auth_type,resource_group,s
     print(end)
   }
 }
-get_blob_data <- function(tenant_id,client_id,auth_key,auth_type,resource_group,storage_account,container_name,blob_folder,blob_name) {
+get_blob_data <- function(tenant_id,client_id,auth_key,auth_type,resource_group,storage_account,container_name,blob_folder,blob_name,...) {
   sc <- createAzureContext(tenantID =tenant_id
                            #application id = clientID
                            ,clientID = client_id
@@ -63,12 +63,13 @@ get_blob_data <- function(tenant_id,client_id,auth_key,auth_type,resource_group,
     filepath<-tempfile()
     write_lines(data,filepath)
     if (!exists('blob_df')){
-      blob_df<-fread(filepath,showProgress = F)
+      blob_df<-fread(filepath,showProgress = F,...)
       start <- start+1
     } else {
-      blob_df %<>% rbind(.,fread(filepath, showProgress = F))
+      blob_df %<>% rbind(.,fread(filepath, showProgress = F,...))
       start<-start+1
     }
   }
   return(blob_df)
 }
+
