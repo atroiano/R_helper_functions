@@ -18,7 +18,7 @@ save_chunks<-function(df,tenant_id,client_id,auth_key,auth_type,resource_group,s
                            ,authType = auth_type)
   
   azureSAGetKey(sc,resourceGroup = resource_group, storageAccount = storage_account )
-  while (end < nrow(df) ) {
+  while (end <= nrow(df) ) {
     #get size of one row and figure out how many rows per chunk, limiting to 64 MB
     #id will save multiple files
     chunk<-denials_data_valid[start:end,]
@@ -28,9 +28,14 @@ save_chunks<-function(df,tenant_id,client_id,auth_key,auth_type,resource_group,s
                  ,container = container_name
                  ,contents = write.csv.str(chunk)
                  ,blob = paste(blob_folder,'/',blob_name,'_',id,sep='')) 
+    if (end ==  nrow(df) )
+      return(NULL)
     id<- id+1
     start <- end+1
     end <- start+num_rows
+
+    if (end >= nrow(df))
+      end <- nrow(df)
     print(start)
     print(end)
   }
@@ -58,13 +63,9 @@ get_blob_data <- function(tenant_id,client_id,auth_key,auth_type,resource_group,
       blob_df<-fread(filepath,showProgress = F)
       start <- start+1
     } else {
-      blob_df %<>% rbind(.,fread(filepath))
+      blob_df %<>% rbind(.,fread(filepath, showProgress = F))
       start<-start+1
     }
   }
-  data<-azureGetBlob(azureActiveContext = sc,storageAccount = storage_account, directory = blob_folder,container = container_name,resourceGroup = resource_group,blob=paste(blob_name,'_',start,sep=''))
-  filepath<-tempfile()
-  write_lines(data,filepath)
-  blob_df %<>% rbind(.,fread(filepath))
   return(blob_df)
 }
