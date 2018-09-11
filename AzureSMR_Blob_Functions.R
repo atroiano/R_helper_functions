@@ -62,5 +62,9 @@ get_blob_data <- function(tenant_id,client_id,auth_key,auth_type,resource_group,
       start<-start+1
     }
   }
+  data<-azureGetBlob(azureActiveContext = sc,storageAccount = storage_account, directory = blob_folder,container = container_name,resourceGroup = resource_group,blob=paste(blob_name,'_',start,sep=''))
+  filepath<-tempfile()
+  write_lines(data,filepath)
+  blob_df %<>% rbind(.,fread(filepath))
   return(blob_df)
 }
