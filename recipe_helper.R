@@ -1,4 +1,5 @@
-get_means_recipe<- function(rec){
+#will work with a standard recipe with one step center and one step scale action.
+get_mean_recipe<- function(rec){
   map(rec$steps,.f = function(.x){
     if(class(.x)[[1]] =='step_center')
       return(.x$means)
