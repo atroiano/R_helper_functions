@@ -1,13 +1,13 @@
 # Credit to dantonnoriega at https://github.com/dantonnoriega/xmltools/blob/master/R/xml_get_paths.R. 
-# I ripped this function off 100% from his code for this purpose.
+# I ripped this function off 100% from his code for this purpose and added the term_value to be required
 
 #this will create a list of terminal nodes from a nodeset, so you do something like
 #mark_terminal_value = '/term'
 #path_dig(xml_find_all(xml_data,'//Location/Location2', mark_terminal = mark_terminal_value
-path_dig <- function(nodeset, ...) {
+path_dig <- function(nodeset, term_value,...) {
   
   args <- list(...)
-  mark_terminal <- args$mark_terminal
+  mark_terminal <- term_value
   
   node_len <- nodeset %>%
     xml2::xml_length()
