@@ -1,3 +1,4 @@
+pacman::p_load(tidyverse,xml2,XML)
 # Credit to dantonnoriega at https://github.com/dantonnoriega/xmltools/blob/master/R/xml_get_paths.R. 
 # I ripped this function off 100% from his code for this purpose and added the term_value to be required
 
