@@ -49,6 +49,7 @@ path_dig <- function(nodeset, term_value,...) {
 
 #After that is run, pass all the paths and the document you used above to this function to get a DF that supports 7 levels of traversing and arrays.
 # Term_name is the name of the terminal values you passed above so the object mark_terminal_value
+#NodeXLoop is the loop number for that terminal value if it's located within an array.
 get_terminal_data <- function(xml_paths, xml_doc,term_name){
   paths = xml_paths %>% unlist
   terminal_nodes <- paths %>% keep(~str_detect(.x,term_name))
@@ -77,3 +78,4 @@ get_terminal_data <- function(xml_paths, xml_doc,term_name){
     )
   return(terminal_stuff)
 }
+
