@@ -1,3 +1,4 @@
+# files should be the fs::dir_lis(<loc of files>)
 covid_data <- read_csv(files[1])
 
 for (i in files[2:length(files)]){
